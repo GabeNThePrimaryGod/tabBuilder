@@ -1,0 +1,22 @@
+{
+    "name": "tab-builder",
+    "version": "1.0.0",
+    "description": "personas fusion table generator",
+    "main": "src/main.js",
+    "scripts": {
+        "start": "electron .",
+        "postinstall-linux": "cp -R node_modules/@fortawesome/fontawesome-free ./src/renderer/vendor/fontawesome-free && mkdir src/renderer/vendor/socket.io-client && cp node_modules/socket.io-client/socket.io.js src/vendor/socket.io-client",
+        "postinstall-windows": "xcopy \"./node_modules/@fortawesome/fontawesome-free\" \"./src/renderer/vendor/fontawesome-free\" /e /h /i && mkdir \"src/renderer/vendor/socket.io-client\" && copy node_modules\\socket.io-client\\dist\\socket.io.js src\\renderer\\vendor\\socket.io-client"
+    },
+    "repository": "",
+    "author": "",
+    "devDependencies": {
+        "electron": "^9.0.3",
+        "electron-reload": "^1.5.0"
+    },
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "^5.13.1",
+        "socket.io-client": "^2.3.0",
+        "notyf": "^3.7.0"
+    }
+}
