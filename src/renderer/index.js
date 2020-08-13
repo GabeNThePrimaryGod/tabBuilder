@@ -1,7 +1,5 @@
-//const fs = require('fs');
 const { ipcRenderer } = require('electron');
-const path = require('path');
-const sweetalert = require('sweetalert');
+const swal = require('sweetalert');
 
 main(); 
 
@@ -9,6 +7,8 @@ async function main()
 {
     const personas = await getPersonas();
     const data = await getData();
+
+    showData();
     
     const set_input = document.getElementById('set');
     const refresh_input = document.getElementById('refresh');
@@ -33,7 +33,25 @@ async function main()
 
         if(data[p1][p2] || data[p2][p1])
         {
-            overrideData(data, p1, p2, value);
+            overrideData(data, p1, p2, value)
+            .then((action) =>
+            {
+                console.log(action);
+        
+                if(action === 'override')
+                {
+                    data[p1][p2] = value;
+                    data[p2][p1] = value;
+        
+                    console.log(`Overriding "${p1}" + "${p2}" fusion with "${value}"`)
+                    saveData(data).then(showData);
+                }
+                else
+                {
+                    console.log('cancel overriding');
+                }
+            })
+            .catch(console.error);
         }
         else
         {
@@ -41,55 +59,77 @@ async function main()
             data[p2][p1] = value;
 
             console.log(`${p1} + ${p2} = ${value}`)
+            saveData(data).then(showData);
         }
-
-        showData();
-        saveData(data);
     });
 
-    refresh_input.addEventListener('click', _=> showData(data));
+    refresh_input.addEventListener('click', showData);
 }
 
 async function showData()
 {
     const dataView = document.getElementById('dataView');
 
-    console.log(await getData());
+    const datas = await getData();
+    const personas = await getPersonas();
+
+    let tab = '';
+
+    // first line
+    let isFirstTurn = true;
+
+    tab += '<tr><td style="background-color:lightgrey"></td>';
+
+    for(const persona of personas)
+    {        
+        tab += `<td style="background-color:lightgrey">${persona}</td>`;
+    }
+
+    tab += '</tr>'
+
+    for(const persona of personas)
+    {
+        tab += "<tr>"
+        tab += `<td style="background-color:lightgrey">${persona}</td>`;
+
+        for(const _persona of personas)
+        {
+            tab += `<td>${(datas[persona][_persona]) ? datas[persona][_persona] : '-'}</td>`;
+        }
+
+        tab += "</tr>"
+    }
+
+    dataView.innerHTML = tab;
 }
 
 function overrideData(data, p1, p2, value)
 {
-    swal(`This will Override the "${p1}" + "${p2}" fusion which is "${data[p1][p2]}"`,
+    return new Promise((resolve, reject) => 
     {
-        buttons: 
+        swal(`This will Override the "${p1}" + "${p2}" fusion which is "${data[p1][p2]}"`,
         {
-            override: "Override",
-            cancel: "Cancel"
-        },
-        icon: "warning"
+            buttons: 
+            {
+                override: "Override",
+                cancel: "Cancel"
+            },
+            icon: "warning"
+        })
+        .then(resolve)
+        .catch(reject);
     })
-    .then((action) =>
-    {
-        console.log(action);
-
-        if(action === 'override')
-        {
-            data[p1][p2] = value;
-            data[p2][p1] = value;
-
-            console.log(`Overriding "${p1}" + "${p2}" fusion with "${value}"`)
-        }
-        else
-        {
-            console.log('cancel overriding');
-        }
-    });
 }
 
-async function saveData(data)
+function saveData(data)
 {
     console.log(`saving data ...`);
-    ipcRenderer.send('saveData', data);
+
+    return new Promise((resolve, reject) => 
+    {
+        ipcRenderer.send('saveData', data);
+        ipcRenderer.once('datasaved', resolve);
+    });
 }
 
 function getData()

@@ -5,24 +5,44 @@
     <title>Tab Builder</title>
     <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>-->
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link type="text/css" rel="stylesheet" href="./css/materialize.min.css" media="screen,projection" />
+    <link type="text/css" rel="stylesheet" href="./css/main.css" media="screen,projection" />
+
 </head>
 
 <body>
-    
     <div>
-        <input type="text" id="p1" placeholder="persona 1">
-        <input type="text" id="p2" placeholder="persona 2">
-        <input type="text" id="value" placeholder="fusion">
+        <input type="text" id="p1" placeholder="Persona 1">
+        <input type="text" id="p2" placeholder="Persona 2">
+        <input type="text" id="value" placeholder="Fusion">
     
-        <input type="button" id="set" value="Set">
+        <input class="waves-effect waves-light btn" type="button" id="set" value="Set">
     </div>
 
-    <div id="dataView">
-        <input type="button" id="refresh" value="Refresh">
+    <input class="waves-effect waves-light btn" type="button" id="refresh" value="Refresh">
+
+    <div class="recipes container grey-text text-darken-1" style="margin: 0 0 0; text-align: center;">
+
+        <div class="center">
+
+            <table id="dataView" class="tftable" border="1">
+
+            </table>
+            
+        </div>
+
     </div>
+
 </body>
 
 <footer>
+        <!---CSS-->
+        <script type="text/javascript" src="./js/materialize.min.js"></script>
+        <script type="text/javascript" src="./js/ui.js"></script>
+        <!---CSS-->
+
     <script src="index.js"></script>
 </footer>
 </html>

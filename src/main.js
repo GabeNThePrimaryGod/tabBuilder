@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
+const fs = require('fs');
 require("electron-reload")(path.join(__dirname, ".."));
 
 let mainWindow = null;
@@ -20,17 +21,16 @@ function createMainWindow()
 
 app.on("ready", () =>
 {
-    createMainWindow(); 
-    mainWindow.webContents.openDevTools();
+    createMainWindow();
+    //mainWindow.webContents.openDevTools();
 });
 
-ipcMain.on('saveData', (event, args) =>
+ipcMain.on('saveData', (event, data) =>
 {
-    console.log(event, args);
-
-    /*fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(data), 'utf8', (err) => 
+    fs.writeFile(path.join(__dirname, './renderer/data.json'), JSON.stringify(data), 'utf8', (err) => 
     {
         if (err) throw err;
-        console.log('succesfully saved data', data);
-    });*/
+        console.log('succesfully saved data');
+        event.sender.send('datasaved', data);
+    });
 });
