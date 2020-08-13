@@ -1,5 +1,7 @@
-const fs = require('fs');
+//const fs = require('fs');
+const { ipcRenderer } = require('electron');
 const path = require('path');
+const sweetalert = require('sweetalert');
 
 main(); 
 
@@ -15,47 +17,79 @@ async function main()
     {
         const p1 = document.getElementById('p1').value;
         const p2 = document.getElementById('p2').value;
-        const value = (document.getElementById('value').value === 'null') ? null : document.getElementById('value').value;
-
-        // sécurité 0 %
-        if(personas.includes(value))
+        const value = document.getElementById('value').value;
+        
+        // check if all personas is existing
+        const check = [p1, p2, value];
+        for(const persona of check)
         {
-            console.log(`${p1} + ${p2} = ${value}`);
+            if(!personas.includes(persona))
+            {
+                console.error(`can't found ${value} in personas list`);
+                swal("Error", `can't found ${value} in personas list`, "error");
+                return;
+            }
+        }
 
-            data[p1][p2] = value;
-            data[p2][p1] = value;
-
-            saveData(data);
+        if(data[p1][p2] || data[p2][p1])
+        {
+            overrideData(data, p1, p2, value);
         }
         else
         {
-            console.error(`can't found ${value} in personas list`)
+            data[p1][p2] = value;
+            data[p2][p1] = value;
+
+            console.log(`${p1} + ${p2} = ${value}`)
         }
+
+        showData();
+        saveData(data);
     });
 
     refresh_input.addEventListener('click', _=> showData(data));
 }
 
-async function showData(data)
+async function showData()
 {
     const dataView = document.getElementById('dataView');
 
     console.log(await getData());
 }
 
-function saveData(data)
+function overrideData(data, p1, p2, value)
+{
+    swal(`This will Override the "${p1}" + "${p2}" fusion which is "${data[p1][p2]}"`,
+    {
+        buttons: 
+        {
+            override: "Override",
+            cancel: "Cancel"
+        },
+        icon: "warning"
+    })
+    .then((action) =>
+    {
+        console.log(action);
+
+        if(action === 'override')
+        {
+            data[p1][p2] = value;
+            data[p2][p1] = value;
+
+            console.log(`Overriding "${p1}" + "${p2}" fusion with "${value}"`)
+        }
+        else
+        {
+            console.log('cancel overriding');
+        }
+    });
+}
+
+async function saveData(data)
 {
     console.log(`saving data ...`);
-
-    try
-    {
-        fs.writeFileSync(path.join(__dirname, 'data.json'), JSON.stringify(data));
-        console.log('succesfully saved data', data);
-    } 
-    catch (err)
-    { 
-        console.error(err);
-    }
+    ipcRenderer.send('saveData', data);
 }
 
 function getData()

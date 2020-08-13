@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 require("electron-reload")(path.join(__dirname, ".."));
 
@@ -22,4 +22,15 @@ app.on("ready", () =>
 {
     createMainWindow(); 
     mainWindow.webContents.openDevTools();
+});
+
+ipcMain.on('saveData', (event, args) =>
+{
+    console.log(event, args);
+
+    /*fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(data), 'utf8', (err) => 
+    {
+        if (err) throw err;
+        console.log('succesfully saved data', data);
+    });*/
 });
