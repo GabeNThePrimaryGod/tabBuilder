@@ -25,8 +25,8 @@ async function main()
         {
             if(!personas.includes(persona))
             {
-                console.error(`can't found ${value} in personas list`);
-                swal("Error", `can't found ${value} in personas list`, "error");
+                console.error(`can't found "${value}" in personas list`);
+                swal("Error", `can't found "${value}" in personas list`, "error");
                 return;
             }
         }
